@@ -3,6 +3,7 @@ import '../assets/styles/components/Carousel.scss';
 
 
 const Carousel = ({title, children }) => {
+  console.log('title carouse', title)
   // useState es arreglo con dos posiciones [0] y [1]
   // [0] = variable a manejar por useState que se inicializa con el argumento de useState
   // [1] = función que actualiza la variable que recibe el valor de la nueva variable
@@ -27,7 +28,7 @@ const Carousel = ({title, children }) => {
     setShow(childrenA)
     
   // la variable luego de la ',' [count], sirve para limitar el la ejecución de useEffect solo cuando dicha variable cambia 
-  }, [count])
+  }, [count, children])
 
   return (
   <>

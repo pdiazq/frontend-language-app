@@ -23,7 +23,7 @@ const Search = (props) => {
     const inputVal = params.name.toString()
     getDataFilter(inputVal)
     .then(data => { 
-      console.log(JSON.stringify(data)) 
+      console.log(`oiga traiga.. ${JSON.stringify(data)}`) 
       props.searchList(data);
     })
 

@@ -9,21 +9,24 @@ import '../assets/styles/Home.scss';
 
 
 const List = ({mySearch ,...props}) => (
-  <>
-    <Header />
-    <Search {...props} />
-    <Categories title="Búsqueda">
-      <Carousel>
-        {mySearch.map(item => (
-          <CarouselItem key={item.id} {...item} />
-        ))}
-      </Carousel>
-    </Categories>
-  </>
+<>
+  <Header />
+  <Search {...props} />
+  <Categories title="Búsqueda">
+    <Carousel>
+      {mySearch.map(item => (
+        <CarouselItem key={item.id} {...item} />
+      ))}
+    </Carousel>
+  </Categories>
+</>
 );
 
+
+
+
 const mapStateToProps = state => {
-  console.log(`LISTA ESTADO ${JSON.stringify(state.mySearch)}`)
+  console.log(`LISTA ESTADO 1 ${JSON.stringify(state.mySearch)}`)
   return {
     mySearch: state.mySearch
   };
