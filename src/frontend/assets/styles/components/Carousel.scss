@@ -14,7 +14,6 @@
   white-space: nowrap;
   margin: 70px 0px;
   padding-bottom: 10px;
-  position: static;
 }
 
 
@@ -24,6 +23,7 @@
   font-size: 16px;
   margin-top: -16px;
   position: absolute;
+  position: sticky;
   padding-left: 30px;
   width: 100%;
 }
