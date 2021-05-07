@@ -62,7 +62,7 @@ const Search = (props) => {
 
   return (
     <section className="main">
-      <h2 className="main__title">¿Qué quieres ver hoy?</h2>
+      <h2 className="main__title">Busca lo que necesites!</h2>
       <input type="text" id="myText" onKeyDown={keyPressed} className={inputStyle} placeholder="Buscar..." />
       <button type="button" onClick={getInputValue}>Search</button>
     </section>

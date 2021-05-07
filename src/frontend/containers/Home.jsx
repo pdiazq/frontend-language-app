@@ -36,7 +36,7 @@ const Home = ({ myList, trends, originals }) => {
           ))}
         </Carousel>
 
-        <Carousel title="Originales de Platfix">
+        <Carousel title="Originales eOrganic">
           {originals.map(item =>
             <CarouselItem key={item.id} {...item} />
           )}
