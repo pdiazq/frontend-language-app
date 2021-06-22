@@ -222,8 +222,8 @@ app.get(
     const { token, ...user } = req.user;
 
     res.cookie("token", token, {
-      httpOnly: !config.dev,
-      secure: !config.dev
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
     });
 
     res.status(200).json(user);
@@ -245,8 +245,8 @@ app.get(
     const { token, ...user } = req.user;
 
     res.cookie("token", token, {
-      httpOnly: !config.dev,
-      secure: !config.dev
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
     });
 
     res.status(200).json(user);
