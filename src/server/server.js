@@ -242,14 +242,28 @@ app.get(
       next(boom.unauthorized());
     }
 
-    const { token, ...user } = req.user;
-
     res.cookie("token", token, {
       httpOnly: !(ENV === 'development'),
       secure: !(ENV === 'development')
     });
-
-    res.status(200).json(user);
+    const { token, ...user } = req.user;
+    res.cookie("token", token, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    res.cookie("id", user.user.id, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    res.cookie("name", user.user.name, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    res.cookie("email", user.user.email, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    return res.redirect('/')
   }
 );
 
