@@ -2,7 +2,7 @@
   "name": "react-base",
   "version": "1.0.0",
   "engines": {
-    "node": "10.x",
+    "node": "14.x",
     "npm": "6.x"
   },
   "description": "React Base",
