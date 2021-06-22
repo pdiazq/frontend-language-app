@@ -18,10 +18,8 @@ import reducer from '../frontend/reducers';
 import Layout from '../frontend/components/Layout';
 import serverRoutes from '../frontend/routes/serverRoutes';
 import getManifest from './getManifest';
-import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 
-
-
+const session = require("express-session");
 
 
 
@@ -32,10 +30,14 @@ const { ENV, PORT } = process.env;
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(session({ secret: process.env.SESSION_SECRET }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 require('./utils/auth/strategies/basic');
+require('./utils/auth/strategies/oauth');
+require('./utils/auth/strategies/twitter');
+require('./utils/auth/strategies/facebook');
 
 if (ENV === 'development') {
   const webPackConfig = require('../../webpack.config');
@@ -164,19 +166,15 @@ app.post("/auth/sign-in", async function (req, res, next) {
       if (error || !data) {
         next(boom.unauthorized());
       }
-
       req.login(data, { session: false }, async function (err) {
         if (err) {
           next(err);
         }
-
         const { token, ...user } = data;
-
         res.cookie("token", token, {
           httpOnly: !(ENV === 'development'),
           secure: !(ENV === 'development')
         });
-
         res.status(200).json(user);
       });
     } catch (err) {
@@ -196,7 +194,7 @@ app.post("/auth/sign-up", async function (req, res, next) {
         'email': user.email,
         'name': user.name,
         'password': user.password,
-        'movies': []
+        //'movies': []
       }
     });
     res.status(201).json({
@@ -208,6 +206,98 @@ app.post("/auth/sign-up", async function (req, res, next) {
     next(error);
   }
 });
+
+
+//Facebook
+app.get("/auth/facebook", passport.authenticate("facebook"));
+
+app.get(
+  "/auth/facebook/callback",
+  passport.authenticate("facebook", { session: false }),
+  function(req, res, next) {
+    if (!req.user) {
+      next(boom.unauthorized());
+    }
+
+    const { token, ...user } = req.user;
+
+    res.cookie("token", token, {
+      httpOnly: !config.dev,
+      secure: !config.dev
+    });
+
+    res.status(200).json(user);
+  }
+);
+
+//Twitter
+
+app.get("/auth/twitter", passport.authenticate("twitter"));
+
+app.get(
+  "/auth/twitter/callback",
+  passport.authenticate("twitter", { session: false }),
+  function(req, res, next) {
+    if (!req.user) {
+      next(boom.unauthorized());
+    }
+
+    const { token, ...user } = req.user;
+
+    res.cookie("token", token, {
+      httpOnly: !config.dev,
+      secure: !config.dev
+    });
+
+    res.status(200).json(user);
+  }
+);
+
+
+
+//Oauth
+
+app.get(
+  "/auth/google-oauth",
+  passport.authenticate("google-oauth", {
+    scope: ["email", "profile", "openid"]
+  })
+);
+
+app.get(
+  "/auth/google-oauth/callback",
+  passport.authenticate("google-oauth", { session: false }),
+  function(req, res, next) {
+    if (!req.user) {
+      next(boom.unauthorized());
+    }
+    const { token, ...user } = req.user;
+    res.cookie("token", token, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    res.cookie("id", user.user.id, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    res.cookie("name", user.user.name, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    res.cookie("email", user.user.email, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    //require('../frontend/index2')
+    //console.log('usuario logeado como id:', user.user.name)
+    //res.status(200).json(user);
+    //return <Redirect to='http://localhost:8000/' />
+    //res.redirect(300, '/');
+    return res.redirect('/')
+  }
+);
+
+
 
 // Agregar películas favoritas
 
@@ -227,7 +317,7 @@ app.put("/user/:userMovieId", async function(req, res, next) {
       method: "put",
       data: userMovie
     });
-    console.log(`status ${status}`)
+    console.log(`traida en server status ${status}`)
     if (status !== 200) {
       return next(boom.badImplementation());
     }

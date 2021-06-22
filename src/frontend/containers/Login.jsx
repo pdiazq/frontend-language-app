@@ -7,6 +7,7 @@ import '../assets/styles/components/Login.scss';
 import Header from '../components/Header';
 import googleIcon from '../assets/static/google-icon.png';
 import twitterIcon from '../assets/static/twitter-icon.png';
+import facebookIcon from '../assets/static/facebook.png';
 
 const Login = props => {
   const [form, setValues] = useState({
@@ -63,12 +64,24 @@ const Login = props => {
             <div>
               <img src={googleIcon} alt="Google" />
               {' '}
-              Inicia sesión con Google
+              <Link to="/auth/google-oauth">
+                Inicia sesión con Google
+              </Link>
             </div>
+            <div>
+              <img src={facebookIcon} alt="Twitter" />
+              {' '}
+              <Link to="/auth/facebook">
+                Inicia sesión con Facebook
+              </Link>
+            </div>
+
             <div>
               <img src={twitterIcon} alt="Twitter" />
               {' '}
-              Inicia sesión con Twitter
+              <Link to="/auth/twitter">
+                Inicia sesión con Twitter
+              </Link>
             </div>
           </section>
           <p className="login__container--register">
