@@ -30,7 +30,7 @@ const { ENV, PORT } = process.env;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(session({ secret: process.env.SESSION_SECRET }));
+app.use(session({ secret: process.env.SESSION_SECRET, cookie: { secure: false } }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -220,13 +220,24 @@ app.get(
     }
 
     const { token, ...user } = req.user;
-
     res.cookie("token", token, {
       httpOnly: !(ENV === 'development'),
       secure: !(ENV === 'development')
     });
+    res.cookie("id", user.user.id, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    res.cookie("name", user.user.name, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    res.cookie("email", user.user.email, {
+      httpOnly: !(ENV === 'development'),
+      secure: !(ENV === 'development')
+    });
+    return res.redirect('/')
 
-    res.status(200).json(user);
   }
 );
 
@@ -242,11 +253,9 @@ app.get(
       next(boom.unauthorized());
     }
 
-    res.cookie("token", token, {
-      httpOnly: !(ENV === 'development'),
-      secure: !(ENV === 'development')
-    });
     const { token, ...user } = req.user;
+
+    console.log(` Desde Twitter (token): ${token} usuario: ${user}`)
     res.cookie("token", token, {
       httpOnly: !(ENV === 'development'),
       secure: !(ENV === 'development')
