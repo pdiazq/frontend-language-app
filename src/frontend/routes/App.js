@@ -16,9 +16,9 @@ const App = ({ isLogged }) => (
         <Route exact path="/" component={Home} />
         <Route path="/product/login" component={Login} />
         <Route path="/login" component={Login} />
-        <Route path="/auth/google-oauth" render={() => (window.location = "/auth/google-oauth")} />
-        <Route path="/auth/twitter" render={() => (window.location = "/auth/twitter")} />
-        <Route path="/auth/facebook" render={() => (window.location = "auth/facebook")} />
+        <Route path="/auth/google-oauth" render={() => (window.location = "https://front-idioms.herokuapp.com/auth/google-oauth")} />
+        <Route path="/auth/twitter" render={() => (window.location = "https://front-idioms.herokuapp.com/auth/twitter")} />
+        <Route path="/auth/facebook" render={() => (window.location = "https://front-idioms.herokuapp.com/auth/facebook")} />
         <Route exact path="/player/:id" component={isLogged ? Player : Login} />
         <Route exact path="/list/:name" render={(props ) => <List isHome {...props} />} />
         <Route exact path="/product/:id" component={Detail} />
