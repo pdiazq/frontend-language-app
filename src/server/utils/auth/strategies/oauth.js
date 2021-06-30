@@ -19,7 +19,8 @@ const oAuth2Strategy = new OAuth2Strategy({
   tokenURL: GOOGLE_TOKEN_URL,
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/auth/google-oauth/callback'
+  proxy: true,
+  callbackURL: `/auth/google-oauth/callback`
   }, 
   async function (accessToken, refreshToken, profile, cb){
   const {data, status} = await axios ({
