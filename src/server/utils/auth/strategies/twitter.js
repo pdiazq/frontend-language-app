@@ -13,6 +13,7 @@ passport.use(
     {
       consumerKey: process.env.TWITTER_CONSUMER_KEY,
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+      proxy: true,
       callbackURL: "/auth/twitter/callback",
       includeEmail: true
     },
