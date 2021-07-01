@@ -313,10 +313,10 @@ app.get(
     });
     //require('../frontend/index2')
     //console.log('usuario logeado como id:', user.user.name)
-    res.status(200).json(user);
+    //res.status(200).json(user);
     //return <Redirect to='http://localhost:8000/' />
     //res.redirect(300, '/');
-    //return res.redirect('/')
+    return res.redirect('/')
   }
 );
 
