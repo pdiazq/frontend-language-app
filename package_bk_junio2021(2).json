@@ -5,6 +5,7 @@
     "node": "10.x",
     "npm": "6.x"
   },
+  "yo":"yo",
   "description": "React Base",
   "main": "index.js",
   "scripts": {
