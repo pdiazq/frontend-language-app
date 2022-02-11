@@ -35,11 +35,11 @@ const Detail = (props) => {
         <Photo {...product} />
       </div>
       <div>
-          <h1>Hola {user.name}</h1>
-          <h1>Título: {product.title}</h1>
-          <h1>Año: {product.year}</h1>
-          <h1>Descripción: {product.description}</h1>
-          <h1>Tags: {product.tags}</h1>
+          <h1>Hola {user.name || ''}</h1>
+          <h1>Título: {product.title || ''}</h1>
+          <h1>Año: {product.year || ''}</h1>
+          <h1>Descripción: {product.description || ''}</h1>
+          <h1>Tags: {product.tags || ''}</h1>
       </div>
 
       <div>
