@@ -30,7 +30,15 @@ const { ENV, PORT } = process.env;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(session({ secret: process.env.SESSION_SECRET, cookie: { secure: false } }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -44,9 +52,16 @@ if (ENV === 'development') {
   const webpackDevMiddleware = require('webpack-dev-middleware');
   const webpackHotMiddleware = require('webpack-hot-middleware');
   const compiler = webpack(webPackConfig);
-  const serverConfig = { port: PORT, hot: true };
+
+  // ⚠️  NO incluyas port ni hot — ya lo gestiona webpack-dev-server
+  const serverConfig = {
+    publicPath: webPackConfig.output.publicPath,
+    stats: 'minimal',            // opcional
+    serverSideRender: true       // si lo necesitas
+  };
+
   app.use(webpackDevMiddleware(compiler, serverConfig));
-  app.use(webpackHotMiddleware(compiler));
+  app.use(webpackHotMiddleware(compiler)); // HMR
 } else {
   app.use((req, res, next) => {
     req.hashManifest = getManifest();
@@ -91,7 +106,7 @@ const renderApp = async (req, res) => {
 
   try {
     console.log(`SERVER TRAYENDO PELIS DE USUARIO ${id}`)
-    
+
     let movieList = await axios({
       url: `${process.env.API_URL}/api/movies`,
       //headers: { Authorization: `Bearer ${token}`},
@@ -100,49 +115,49 @@ const renderApp = async (req, res) => {
 
     let userMovies = await axios({
       url: `${process.env.API_URL}/api/user/${id}`,
-      headers: { Authorization: `Bearer ${token}`},
+      headers: { Authorization: `Bearer ${token}` },
       method: 'get',
     })
 
-    userMovies = (userMovies.data.data).movies;   
+    userMovies = (userMovies.data.data).movies;
     movieList = movieList.data.data;
 
     initialState = {
-      user: {id, email, name},
-      mySearch:[],
-      myList: movieList.filter((movie) => userMovies.includes(movie._id)), 
+      user: { id, email, name },
+      mySearch: [],
+      myList: movieList.filter((movie) => userMovies.includes(movie._id)),
       trends: movieList.filter(movie => movie.contentRating === 'PG' && movie._id),
-      originals: movieList.filter(movie => movie.contentRating === 'G'&& movie._id)
+      originals: movieList.filter(movie => movie.contentRating === 'G' && movie._id)
     };
   } catch (err) {
     try {
       console.log(`SERVER TRAYENDO PELIS DE USUARIO ${id}`)
-    
+
       let movieList = await axios({
         url: `${process.env.API_URL}/api/movies`,
         //headers: { Authorization: `Bearer ${token}`},
         method: 'get',
-      });  
+      });
       movieList = movieList.data.data;
       initialState = {
-        user: {id, email, name},
-        mySearch:[],
-        myList:[],
+        user: { id, email, name },
+        mySearch: [],
+        myList: [],
         trends: movieList.filter(movie => movie.contentRating === 'PG' && movie._id),
-        originals: movieList.filter(movie => movie.contentRating === 'G'&& movie._id)
+        originals: movieList.filter(movie => movie.contentRating === 'G' && movie._id)
       }
 
-    } catch{
+    } catch {
       initialState = {
         user: {},
-        mySearch:[],
+        mySearch: [],
         myList: [],
         trends: [],
         originals: []
       }
     }
   }
- 
+
   //console.log (`Mi Lista..... :::: ${JSON.stringify(initialState.myList)}`)
 
   const store = createStore(reducer, initialState);
@@ -214,7 +229,7 @@ app.get("/auth/facebook", passport.authenticate("facebook"));
 app.get(
   "/auth/facebook/callback",
   passport.authenticate("facebook", { session: false }),
-  function(req, res, next) {
+  function (req, res, next) {
     if (!req.user) {
       next(boom.unauthorized());
     }
@@ -248,7 +263,7 @@ app.get("/auth/twitter", passport.authenticate("twitter"));
 app.get(
   "/auth/twitter/callback",
   passport.authenticate("twitter", { session: false }),
-  function(req, res, next) {
+  function (req, res, next) {
     if (!req.user) {
       next(boom.unauthorized());
     }
@@ -290,7 +305,7 @@ app.get(
 app.get(
   "/auth/google-oauth/callback",
   passport.authenticate("google-oauth", { session: false }),
-  function(req, res, next) {
+  function (req, res, next) {
     if (!req.user) {
       next(boom.unauthorized());
     }
@@ -324,7 +339,7 @@ app.get(
 
 // Agregar películas favoritas
 
-app.put("/user/:userMovieId", async function(req, res, next) {
+app.put("/user/:userMovieId", async function (req, res, next) {
   try {
     const { userMovieId } = req.params;
     const { body: userMovie } = req;
@@ -353,10 +368,10 @@ app.put("/user/:userMovieId", async function(req, res, next) {
 
 // Traer películas filtradas
 
-app.post("/movies/filter", async function(req, res, next) {
+app.post("/movies/filter", async function (req, res, next) {
   try {
-    const {body: title } = req;
-    const {token} = req.cookies;
+    const { body: title } = req;
+    const { token } = req.cookies;
     //var CircularJSON = require('circular-json');
     //console.log(`EL REQ EN SERVER ES: ${CircularJSON.stringify(title)}`);
     //console.log (`titulo es ${JSON.stringify(req)}`)
@@ -379,7 +394,7 @@ app.post("/movies/filter", async function(req, res, next) {
 
 // Agregar comentarios a las películas
 
-app.put("/movies/:movieId", async function(req, res, next) {
+app.put("/movies/:movieId", async function (req, res, next) {
   try {
     const { movieId } = req.params;
     const { body: comment } = req;
@@ -404,10 +419,10 @@ app.put("/movies/:movieId", async function(req, res, next) {
 
 // Traer comentarios
 
-app.get("/movies/:movieId", async function(req, res, next) {
+app.get("/movies/:movieId", async function (req, res, next) {
   try {
     const { movieId } = req.params;
-    const {token} = req.cookies;
+    const { token } = req.cookies;
     const { data, status } = await axios({
       url: `${process.env.API_URL}/api/movies/${movieId}`,
       headers: { Authorization: `Bearer ${token}` },
@@ -427,7 +442,7 @@ app.get("/movies/:movieId", async function(req, res, next) {
 
 // Borrado de Película de favoritas
 
-app.delete("/user/:userMovieId", async function(req, res, next) {
+app.delete("/user/:userMovieId", async function (req, res, next) {
   try {
     const { userMovieId } = req.params;
     const { body: userMovie } = req;
@@ -454,7 +469,8 @@ app.delete("/user/:userMovieId", async function(req, res, next) {
 });
 
 
-app.get('*', renderApp);
+app.get(/.*/, renderApp);
+
 
 app.listen(PORT, (err) => {
   if (err) console.log(err);
@@ -462,4 +478,4 @@ app.listen(PORT, (err) => {
 });
 
 
-console.log (`CARGANDO SERVER JS ///////////////////////////// ${process.env.API_URL}`)
+console.log(`CARGANDO SERVER JS ///////////////////////////// ${process.env.API_URL}`)
