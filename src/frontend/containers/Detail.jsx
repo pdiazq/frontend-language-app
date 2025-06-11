@@ -14,7 +14,7 @@ import NotFount from "./NotFount";
 
 
 const Detail = (props) => {
-  const {product, user} = props
+  const { product, user } = props
 
   console.log(`DESDE DETAILS..... ${JSON.stringify(product)}`)
   console.log(`DESDE DETAILS USER..... ${JSON.stringify(user)}`)
@@ -26,7 +26,7 @@ const Detail = (props) => {
     console.log(details, data);
   }
 
-  
+
   return (
     <>
       <Header />
@@ -35,25 +35,25 @@ const Detail = (props) => {
         <Photo {...product} />
       </div>
       <div>
-          <h1>Hola {user.name || ''}</h1>
-          <h1>Título: {product.title || ''}</h1>
-          <h1>Año: {product.year || ''}</h1>
-          <h1>Descripción: {product.description || ''}</h1>
-          <h1>Tags: {product.tags || ''}</h1>
+        <h1>Hola {user.name || ''}</h1>
+        <h1>Título: {product.title || ''}</h1>
+        <h1>Año: {product.year || ''}</h1>
+        <h1>Descripción: {product.description || ''}</h1>
+        <h1>Tags: {product.tags || ''}</h1>
       </div>
 
       <div>
         <div>Payment section</div>
         <PaypalBtn
-            amount = {1}
-            currency = {'USD'}
-            onSuccess={paymentHandler}/>
+          amount={1}
+          currency={'USD'}
+          onSuccess={paymentHandler} />
       </div>
-        <div>Comments section</div>
+      <div>Comments section</div>
       <Comment isHome />
-   
+
     </>
-    )
+  )
 
 }
 

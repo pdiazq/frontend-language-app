@@ -18,6 +18,8 @@ import reducer from '../frontend/reducers';
 import Layout from '../frontend/components/Layout';
 import serverRoutes from '../frontend/routes/serverRoutes';
 import getManifest from './getManifest';
+import path from 'path';
+
 
 const session = require("express-session");
 
@@ -71,6 +73,8 @@ if (ENV === 'development') {
   app.use(helmet.permittedCrossDomainPolicies());
   app.disable('x-powered-by');
 }
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 const setResponse = (html, preloadedState, manifest) => {
   const mainStyles = manifest ? manifest['main.css'] : '/assets/app.css';

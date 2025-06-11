@@ -1,5 +1,6 @@
 require('ignore-styles');
-require('@babel/polyfill');
+require('core-js/stable');
+require('regenerator-runtime/runtime');
 
 require('@babel/register')({
   presets: ["@babel/preset-env", "@babel/preset-react"],

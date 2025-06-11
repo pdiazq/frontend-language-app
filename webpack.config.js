@@ -5,26 +5,26 @@ const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin'); // nuevo nombre del plugin
-
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 require('dotenv').config();
 
 const isDev = process.env.ENV === 'development';
 const entry = ['./src/frontend/index.js'];
 
 if (isDev) {
-  // HMR para webpack-hot-middleware + Express
+  // HMR para Webpack + Express con webpack-hot-middleware
   entry.push('webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true');
 }
 
 module.exports = {
   mode: isDev ? 'development' : 'production',
   entry,
+
   output: {
     path: isDev ? '/' : path.resolve(__dirname, 'src/server/public'),
     filename: isDev ? 'assets/app.js' : 'assets/app-[contenthash].js',
-    publicPath: '/',          // URL base para los assets
-    assetModuleFilename: 'assets/[hash][ext][query]' // salida estándar de asset/resource
+    publicPath: '/',
+    assetModuleFilename: 'assets/[hash][ext][query]'
   },
 
   resolve: {
@@ -33,39 +33,49 @@ module.exports = {
 
   module: {
     rules: [
-      // JS / JSX ─────────────────────────────────────────────
+      // JavaScript / JSX
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: 'babel-loader'
       },
 
-      // SASS / CSS ───────────────────────────────────────────
+      // SASS / CSS
       {
         test: /\.(s[ac]ss|css)$/i,
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
-            options: { sourceMap: isDev }
+            options: {
+              sourceMap: isDev,
+              importLoaders: 2,
+              modules: false // usa true si prefieres CSS Modules
+            }
           },
           {
             loader: 'sass-loader',
-            options: { sourceMap: isDev }
+            options: {
+              sourceMap: isDev
+            }
           }
         ]
       },
 
-      // Imágenes y otros assets (nuevo en Webpack 5) ─────────
+      // Imágenes (png, jpg, gif, svg)
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
         type: 'asset/resource'
-        // el nombre de archivo lo define `assetModuleFilename`
+      },
+
+      // Fuentes (opcional)
+      {
+        test: /\.(woff(2)?|ttf|eot)$/,
+        type: 'asset/resource'
       }
     ]
   },
 
-  // Sólo si usas webpack-dev-server directo (no Express). Lo mantenemos por compatibilidad
   devServer: {
     historyApiFallback: true,
     hot: true,
@@ -73,29 +83,22 @@ module.exports = {
   },
 
   plugins: [
-    // HMR solo en desarrollo
     isDev ? new webpack.HotModuleReplacementPlugin() : () => { },
 
-    // Extrae CSS en producción
     new MiniCssExtractPlugin({
       filename: isDev ? 'assets/app.css' : 'assets/app-[contenthash].css'
     }),
 
-    // Comprensión gzip solo en producción
-    isDev
-      ? () => { }
-      : new CompressionPlugin({
-        test: /\.(js|css)$/i,
-        filename: '[path][base].gz',
-        algorithm: 'gzip'
-      }),
+    !isDev &&
+    new CompressionPlugin({
+      test: /\.(js|css)$/i,
+      filename: '[path][base].gz',
+      algorithm: 'gzip'
+    }),
 
-    // Manifest para SSR en producción
-    isDev ? () => { } : new WebpackManifestPlugin()
-  ],
+    !isDev && new WebpackManifestPlugin()
+  ].filter(Boolean), // filtra los () => {} vacíos
 
-  // Fuente de mapa rápida en dev; completa en prod si lo necesitas
   devtool: isDev ? 'eval-cheap-module-source-map' : false,
-
-  stats: 'minimal' // consola más limpia
+  stats: 'minimal'
 };

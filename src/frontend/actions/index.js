@@ -27,9 +27,9 @@ export const registerRequest = payload => ({
 });
 
 export const deteleFavorite = payload => ({
-    type: 'DELETE_FAVORITE',
-    payload,
-  });
+  type: 'DELETE_FAVORITE',
+  payload,
+});
 
 
 export const searchList = payload => ({
@@ -84,25 +84,25 @@ export const loginUser = ({ email, password }, redirectUrl) => {
 
 
 export const favoriteMovie = (userId, movieId, cb) => {
-        //console.log (`ACTIONS FAVORITE MOVIE !!!!!!!!!!!! user: ${userId}, Movie: ${movieId}`);
-        let data = {
-          "movies": movieId
-        };
-        axios({
-          url: `/user/${userId}`,
-          method: 'put',
-          data
-        })
-      .then((data) => {
-        console.log (`EL DATA SE ENVIO DESDE .THEN DE ACTIONS PARA LA ACCION DE ADICIONAR PELI ${JSON.stringify(data)}`)
+  //console.log (`ACTIONS FAVORITE MOVIE !!!!!!!!!!!! user: ${userId}, Movie: ${movieId}`);
+  let data = {
+    "movies": movieId
+  };
+  axios({
+    url: `/user/${userId}`,
+    method: 'put',
+    data
+  })
+    .then((data) => {
+      console.log(`EL DATA SE ENVIO DESDE .THEN DE ACTIONS PARA LA ACCION DE ADICIONAR PELI ${JSON.stringify(data)}`)
 
-      })
-      .catch(err => console.log(`ESTO ES UN PUTO ERROR!!   ${err}`));
+    })
+    .catch(err => console.log(`ESTO ES UN PUTO ERROR!!   ${err}`));
 };
 
 
 export const deleteFavoriteMovie = (userId, movieId, cb) => {
-  console.log (`ACTIONS DELETE MOVIE !!!!!!!!!!!! user: ${userId}, Movie: ${movieId}`);
+  console.log(`ACTIONS DELETE MOVIE !!!!!!!!!!!! user: ${userId}, Movie: ${movieId}`);
   let data = {
     "movies": movieId
   };
@@ -112,11 +112,11 @@ export const deleteFavoriteMovie = (userId, movieId, cb) => {
     method: 'delete',
     data
   })
-.then((data) => {
-  console.log (`EL DATA SE ENVIO DESDE .THEN DE ACTIONS PARA LA ACCION DE BORRAR PELI ${JSON.stringify(data)}`)
+    .then((data) => {
+      console.log(`EL DATA SE ENVIO DESDE .THEN DE ACTIONS PARA LA ACCION DE BORRAR PELI ${JSON.stringify(data)}`)
 
-})
-.catch(err => console.log(`ESTO ES UN PUTO ERROR DE BORRADO!!   ${err}`));
+    })
+    .catch(err => console.log(`ESTO ES UN PUTO ERROR DE BORRADO!!   ${err}`));
 };
 
 // Traer data basado en filtro
@@ -133,24 +133,24 @@ export const getDataFilter = (dataGet) => {
       method: 'post',
       data
     })
-    .then(({data}) => {
-    const payload = data.data
-    //console.log (`EL DATA SE ENVIO DESDE .THEN getDataFilter ${JSON.stringify(payload)}`)
-    //métdo resolve si todo sale bien, retorna (payload)
-    resolve (payload)
-    })
-    //await (filtrado)
-    .catch(err => {
-      console.log(`ESTO ES UN PUTO ERROR PARCE!!   ${err}`)
-      reject(err)
-    });
+      .then(({ data }) => {
+        const payload = data.data
+        //console.log (`EL DATA SE ENVIO DESDE .THEN getDataFilter ${JSON.stringify(payload)}`)
+        //métdo resolve si todo sale bien, retorna (payload)
+        resolve(payload)
+      })
+      //await (filtrado)
+      .catch(err => {
+        console.log(`ESTO ES UN PUTO ERROR PARCE!!   ${err}`)
+        reject(err)
+      });
   });
 }
 
 
 // enviar comentarios/preguntas
 
-export const sendComment = (userId,comment ,movieId, cb) => {
+export const sendComment = (userId, comment, movieId, cb) => {
   //console.log (`ACTIONS FAVORITE MOVIE !!!!!!!!!!!! user: ${userId}, Movie: ${movieId}`);
   let data = {
     "comments": comment
@@ -160,10 +160,10 @@ export const sendComment = (userId,comment ,movieId, cb) => {
     method: 'put',
     data
   })
-.then((data) => {
-  console.log (`EL DATA SE ENVIO DESDE .THEN DE ACTIONS PARA LA ACCION DE ADICIONAR PELI ${JSON.stringify(data)}`)
-})
-.catch(err => console.log(`ESTO ES UN PUTO ERROR!!   ${err}`));
+    .then((data) => {
+      console.log(`EL DATA SE ENVIO DESDE .THEN DE ACTIONS PARA LA ACCION DE ADICIONAR PELI ${JSON.stringify(data)}`)
+    })
+    .catch(err => console.log(`ESTO ES UN PUTO ERROR!!   ${err}`));
 };
 
 
@@ -175,17 +175,17 @@ export const getComments = (movieId) => {
       url: `/movies/${movieId}`,
       method: 'get'
     })
-    .then((data) => {
-      //const payload = data.data
-      //console.log (`EL DATA SE ENVIO DESDE .THEN getDataFilter ${JSON.stringify(payload)}`)
-      //métdo resolve si todo sale bien, retorna (payload)
-      resolve (data)
-    })
+      .then((data) => {
+        //const payload = data.data
+        //console.log (`EL DATA SE ENVIO DESDE .THEN getDataFilter ${JSON.stringify(payload)}`)
+        //métdo resolve si todo sale bien, retorna (payload)
+        resolve(data)
+      })
       //await (filtrado)
-    .catch(err => {
-      console.log(`ESTO ES UN PUTO ERROR PARCE!!   ${err}`)
-      reject(err)
-    });
+      .catch(err => {
+        console.log(`ESTO ES UN PUTO ERROR PARCE!!   ${err}`)
+        reject(err)
+      });
   });
 }
 

@@ -1,90 +1,79 @@
-import React, { useState , useEffect} from 'react';
-import ListComment from '../components/ListComment'
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useHistory } from "react-router-dom";
-import { comment, sendComment, getComments} from "../actions";
+import { sendComment, getComments } from "../actions";
 import '../assets/styles/components/Comment.scss';
 
-
-
 const Comment = (props) => {
+  const { product, user, isHome } = props;
+  const [comments, setComments] = useState(product.comments || []);
+  const inputStyle = classNames('input', { isHome });
+  const history = useHistory();
 
-  const {product, user ,isHome } = props
-  const [comments, setComment]= useState(product.comments || [])
-  const inputStyle = classNames('input', {
-    isHome,
-  });
-
-  let history = useHistory();
-
-  useEffect(() =>{
-    if ( product.comments ) {
+  useEffect(() => {
+    if (product?.comments && product._id) {
       getComments(product._id)
-      .then(data => { 
-        setComment (data.data.data.comments)
-      })
-      .catch(err => void(0))
+        .then(data => {
+          setComments(data.data.data.comments);
+        })
+        .catch(err => console.error("Error al obtener comentarios:", err));
     }
-  })
-  
+  }, [product._id]);
 
-  function keyPressed(event) {
-    const comment = document.getElementById("myComment").value;
-    if (event.keyCode === 13){
-      sendComment(user.id, comment ,product._id)
-      getComments(product._id)
-      .then(data => { 
-        setComment (data.data.data.comments)
-        //console.log(JSON.stringify(data)) 
-        //<Route exact path="/list/:comment" component={isLogged ? List : Login} />
-        //history.push(`/list/${comment}`)
-      })
+  const keyPressed = (event) => {
+    if (event.key === 'Enter') {
+      handleCommentSubmit();
     }
-      //window.location.href = "/list";
-  }
+  };
 
-  function getInputValue(){
-    // Selecting the input element and get its value 
-    const comment = document.getElementById("myComment").value;
-    sendComment(user.id, comment ,product._id)
-    // Displaying the value
-    //console.log('COMENTARIO!',product._id ,user.id);
+  const handleCommentSubmit = () => {
+    const comment = document.getElementById("myComment").value.trim();
+    if (!comment) return;
+
+    sendComment(user.id, comment, product._id);
     getComments(product._id)
-    .then(data => { 
-      //console.log('LOS COMMENTS SON:', JSON.stringify(data.data.data.comments)) 
-      setComment (data.data.data.comments)
-      //props.searchList(data);
-    })
-  }
+      .then(data => {
+        setComments(data.data.data.comments);
+        document.getElementById("myComment").value = "";
+      })
+      .catch(err => console.error("Error al enviar comentario:", err));
+  };
 
   return (
     <section className="main">
       <h2 className="main__title">¿Tienes un comentario?</h2>
-      <input type="text" id="myComment" onKeyDown={keyPressed} className={inputStyle} placeholder="Comenta..." />
-      <button type="button" onClick={getInputValue}>Publica tu comentario</button>
-        
+      <input
+        type="text"
+        id="myComment"
+        onKeyDown={keyPressed}
+        className={inputStyle}
+        placeholder="Comenta..."
+      />
+      <button type="button" onClick={handleCommentSubmit}>Publica tu comentario</button>
+
       <h1>Comentarios:</h1>
-      {Object.values(comments).reverse().map(item => (
-            <h2>{item}</h2>
-          ))}
+      {comments.length > 0 ? (
+        comments.slice().reverse().map((item, index) => (
+          <h2 key={item._id || index}>{item.comment || item}</h2>
+        ))
+      ) : (
+        <p>No hay comentarios aún.</p>
+      )}
     </section>
   );
-}
+};
 
 Comment.propTypes = {
   isHome: PropTypes.bool,
+  product: PropTypes.object,
+  user: PropTypes.object
 };
 
-const mapStateToProps = state => {
-  // el estado es todo lo que existe en memoria y va inicializado desde server??
-  //console.log(`DESDE DETAILS STATE..... ${JSON.stringify(state.product)}`)
-  return {
-    product: state.product,
-    user: state.user
-  };
-};
+const mapStateToProps = (state) => ({
+  product: state.product,
+  user: state.user
+});
 
-
-export default connect(mapStateToProps, null )(Comment);
+export default connect(mapStateToProps, null)(Comment);
