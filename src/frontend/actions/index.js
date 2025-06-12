@@ -6,10 +6,12 @@ export const setFavorite = payload => ({
   payload,
 });
 
-export const detailProd = payload => ({
-  type: 'DETAIL',
-  payload,
-});
+export const detailProd = (id) => (dispatch, getState) => {
+  const { myList, trends, originals } = getState();
+  const movies = [...myList, ...trends, ...originals];
+  const movie = movies.find(m => m._id === id || m.id === id) || {};
+  dispatch({ type: 'GET_MOVIE_DETAIL', payload: movie });
+};
 
 export const loginRequest = payload => ({
   type: 'LOGIN_REQUEST',

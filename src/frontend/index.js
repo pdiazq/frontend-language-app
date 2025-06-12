@@ -5,8 +5,7 @@ import { createBrowserHistory } from 'history';
 import { Provider } from 'react-redux';
 import { legacy_createStore as createStore, compose, applyMiddleware } from 'redux';
 import { thunk } from 'redux-thunk';
-//import App from './routes/App';
-import AppRouter from './routes/serverRoutes';
+import App from './routes/App';
 import reducer from './reducers';
 
 // Soporte para Redux DevTools
@@ -36,7 +35,7 @@ hydrateRoot(
   container,
   <Provider store={store}>
     <Router history={history}>
-      <AppRouter isLogged={!!preloadedState?.user?.id} />
+      <App isLogged={!!preloadedState?.user?.id} />
     </Router>
   </Provider>
 );

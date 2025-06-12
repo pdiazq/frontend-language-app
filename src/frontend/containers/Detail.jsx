@@ -1,70 +1,72 @@
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { detailProd } from '../actions';
+import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
-import Photo from '../components/Photo'
-import { getVideoSource } from "../actions";
-import '../assets/styles/components/Player.scss';
+import Photo from '../components/Photo';
 import Search from '../components/Search';
-import PaypalBtn from '../components/PaypalBtn'
-import Comment from '../components/Comment'
-import NotFount from "./NotFount";
+import PaypalBtn from '../components/PaypalBtn';
+import Comment from '../components/Comment';
+import NotFount from '../containers/NotFount';
+// Si no tienes estilos, comenta o crea un archivo vacío:
+// import '../assets/styles/components/Detail.scss';
 
+const Detail = ({ product, user, detailProd }) => {
+  const { id } = useParams();
 
+  useEffect(() => {
+    detailProd(id);
+  }, [id, detailProd]);
 
-const Detail = (props) => {
-  const { product, user } = props
-
-  console.log(`DESDE DETAILS..... ${JSON.stringify(product)}`)
-  console.log(`DESDE DETAILS USER..... ${JSON.stringify(user)}`)
-
-  const paymentHandler = (details, data) => {
-    /** Here you can call your backend API
-      endpoint and update the database */
-    alert(`${JSON.stringify(user.name)}, tu compra fué realizada :)`);
-    console.log(details, data);
+  if (!product || !product.title) {
+    return (
+      <div className="detail-loading">
+        <h2>Cargando producto o no encontrado...</h2>
+      </div>
+    );
   }
 
+  const paymentHandler = (details, data) => {
+    alert(`${user.name}, tu compra fue realizada :)`);
+  };
 
   return (
     <>
       <Header />
       <Search isHome />
-      <div>
+      <div className="detail-content">
         <Photo {...product} />
+        <div className="detail-info">
+          <h1>{product.title}</h1>
+          <p><strong>Año:</strong> {product.year}</p>
+          <p><strong>Descripción:</strong> {product.description}</p>
+          <p><strong>Tags:</strong> {product.tags && product.tags.join(', ')}</p>
+          <div className="detail-actions">
+            <PaypalBtn
+              amount={product.price}
+              currency={product.currency || 'USD'}
+              onSuccess={paymentHandler}
+            />
+            <Comment isHome />
+          </div>
+        </div>
       </div>
-      <div>
-        <h1>Hola {user.name || ''}</h1>
-        <h1>Título: {product.title || ''}</h1>
-        <h1>Año: {product.year || ''}</h1>
-        <h1>Descripción: {product.description || ''}</h1>
-        <h1>Tags: {product.tags || ''}</h1>
-      </div>
-
-      <div>
-        <div>Payment section</div>
-        <PaypalBtn
-          amount={1}
-          currency={'USD'}
-          onSuccess={paymentHandler} />
-      </div>
-      <div>Comments section</div>
-      <Comment isHome />
-
     </>
-  )
-
-}
-
-
-const mapStateToProps = state => {
-  // el estado es todo lo que existe en memoria y va inicializado desde server??
-  console.log(`DESDE DETAILS STATE..... ${JSON.stringify(state.product)}`)
-  return {
-    product: state.product,
-    user: state.user
-  };
+  );
 };
 
-export default connect(mapStateToProps, null)(Detail);
+Detail.propTypes = {
+  product: PropTypes.object,
+  user: PropTypes.object,
+  detailProd: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+  product: state.product,
+  user: state.user || {}
+});
+
+const mapDispatchToProps = { detailProd };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Detail);
