@@ -130,8 +130,10 @@ const renderApp = async (req, res) => {
       user: { id, email, name },
       mySearch: [],
       myList: movieList.filter((movie) => userMovies.includes(movie._id)),
-      trends: movieList.filter(movie => movie.contentRating === 'PG' && movie._id),
-      originals: movieList.filter(movie => movie.contentRating === 'G' && movie._id)
+      trends: movieList.filter(
+        movie =>
+          ['PG', 'NC-17'].includes(movie.contentRating) && movie._id
+      ),
     };
   } catch (err) {
     try {
@@ -147,7 +149,10 @@ const renderApp = async (req, res) => {
         user: { id, email, name },
         mySearch: [],
         myList: [],
-        trends: movieList.filter(movie => movie.contentRating === 'PG' && movie._id),
+        trends: movieList.filter(
+          movie =>
+            ['PG', 'NC-17'].includes(movie.contentRating) && movie._id
+        ),
         originals: movieList.filter(movie => movie.contentRating === 'G' && movie._id)
       }
 
