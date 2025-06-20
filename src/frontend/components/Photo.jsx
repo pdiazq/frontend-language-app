@@ -1,99 +1,108 @@
-import React , { useState, useEffect } from 'react';
+// src/frontend/components/Photo.jsx
+
+import React, { useRef } from 'react';
 import '../assets/styles/components/CarouselItemimage.scss';
 
+const Photo = ({ image }) => {
+  const imgRef = useRef(null);
+  const lensRef = useRef(null);
+  const resultRef = useRef(null);
+  const rafId = useRef(null);
 
-const Photo = (product) => {
-  // following is to keep variables to show
-  //let [stringOut, changeString]= useState('')
-  let [guarda, paraGuarda]= useState(0) // from onMouseMove
+  const handleMouseEnter = () => {
+    const img = imgRef.current;
+    const result = resultRef.current;
+    if (!img || !result) return;
 
+    // Mostrar la ventana de zoom
+    result.style.display = 'block';
 
-  useEffect(() =>{
-    
-    let img = document.getElementById("myimage")
-    let result = document.getElementById("myresult")
+    // Crear el lente solo una vez
+    if (!lensRef.current) {
+      const lens = document.createElement('div');
+      lens.className = 'img-zoom-lens';
+      // mantenlo oculto hasta el primer movimiento
+      lens.style.display = 'none';
+      lensRef.current = lens;
+      img.parentElement.insertBefore(lens, img);
 
-    function imageZoom(img, result) {
-        var lens, cx, cy;
-        /* Create lens: */
-        lens = document.createElement("DIV");
-        lens.setAttribute("class", "img-zoom-lens");
-        /* Insert lens: */
-        img.parentElement.insertBefore(lens, img);
-        /* Calculate the ratio between result DIV and lens: */
-        cx = result.offsetWidth / lens.offsetWidth;
-        cy = result.offsetHeight / lens.offsetHeight;
-        /* Set background properties for the result DIV */
-        result.style.backgroundImage = `url(${img.src})`
-        result.style.backgroundSize = `${img.width * cx}px ${img.height * cy}px`
-        //result.style.backgroundImage = "url('" + img.src + "')";
-        //result.style.backgroundSize = (img.width * cx) + "px " + (img.height * cy) + "px";
-        /* Execute a function when someone moves the cursor over the image, or the lens: */
-        lens.addEventListener("mousemove", moveLens);
-        img.addEventListener("mousemove", moveLens);
-        /* And also for touch screens: */
-        lens.addEventListener("touchmove", moveLens);
-        img.addEventListener("touchmove", moveLens);
-        function moveLens(e) {
-          var pos, x, y;
-          /* Prevent any other actions that may occur when moving over the image */
-          e.preventDefault();
-          /* Get the cursor's x and y positions: */
-          pos = getCursorPos(e);
-          /* Calculate the position of the lens: */
-          x = pos.x - (lens.offsetWidth / 2);
-          y = pos.y - (lens.offsetHeight / 2);
-          //x = -pos.x
-          //y = -pos.y
-          //x =  (lens.offsetWidth / 2)- pos.x 
-          //y =  (lens.offsetHeight / 2)- pos.y
-          //changeString(`${lens.offsetHeight}`)
-          /* Prevent the lens from being positioned outside the image: */
-          if (x > img.width - lens.offsetWidth) {x = img.width - lens.offsetWidth;}
-          if (x < 0) {x = 0;}
-          if (y > img.height - lens.offsetHeight) {y = img.height - lens.offsetHeight;}
-          if (y < 0) {y = 0;}
-          /* Set the position of the lens: */
-          lens.style.left = x + "px";
-          lens.style.top = y + "px";
-          /* Display what the lens "sees": */
-          //result.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
-          result.style.backgroundPosition = `-${x*cx}px -${y*cy}px` 
-          //var pepe = "-" + (x * cx) + "px -" + (y * cy) + "px"
-          //console.log('result', pepe)
-        }
-        function getCursorPos(e) {
-          var a, x = 0, y = 0;
-          e = e || window.event;
-          /* Get the x and y positions of the image: */
-          a = img.getBoundingClientRect();
-          /* Calculate the cursor's x and y coordinates, relative to the image: */
-          x = e.pageX - a.left;
-          y = e.pageY - a.top;
-          /* Consider any page scrolling: */
-          x = x - window.pageXOffset;
-          y = y - window.pageYOffset;
-          //changeString(`${a.left}, ${a.top}`)
-          return {x, y};
-        }
-      }
-      
-    imageZoom(img, result)
-  }, [])
+      // Prepara background del resultado
+      const cx = result.offsetWidth / lens.offsetWidth;
+      const cy = result.offsetHeight / lens.offsetHeight;
+      result.style.backgroundImage = `url(${img.src})`;
+      result.style.backgroundSize = `${img.width * cx}px ${img.height * cy}px`;
+    }
+  };
 
-  function mouseOut(){
-    console.log('mouse fuera')
-  }
-    
-    return (
-        <>
-          <h1>lens.offsetHeight !!   </h1>
-            <div id="parentElement" className="img-zoom-container" onMouseOut={() => mouseOut()}>
-                <img id="myimage" className="carousel-item__img" src={product.cover} alt={product.title} />
-            </div>
-                <div id="myresult" className="img-zoom-result"></div>
-        </>
-    )
-}
+  // Función que realmente mueve el lente y muestra el mismo
+  const moveLens = e => {
+    const img = imgRef.current;
+    const lens = lensRef.current;
+    const result = resultRef.current;
+    if (!img || !lens || !result) return;
 
-export default Photo
+    // Mostrar el lente en cuanto empiece a moverse
+    lens.style.display = 'block';
+
+    const rect = img.getBoundingClientRect();
+    let x = e.pageX - rect.left - window.pageXOffset - lens.offsetWidth / 2;
+    let y = e.pageY - rect.top - window.pageYOffset - lens.offsetHeight / 2;
+
+    // límites
+    x = Math.max(0, Math.min(x, img.width - lens.offsetWidth));
+    y = Math.max(0, Math.min(y, img.height - lens.offsetHeight));
+
+    lens.style.left = `${x}px`;
+    lens.style.top = `${y}px`;
+
+    // mueve la ventana de zoom
+    const cx = result.offsetWidth / lens.offsetWidth;
+    const cy = result.offsetHeight / lens.offsetHeight;
+    result.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
+  };
+
+  // Throttle con rAF para suavidad
+  const handleMouseMove = e => {
+    if (rafId.current) return;
+    rafId.current = requestAnimationFrame(() => {
+      moveLens(e);
+      rafId.current = null;
+    });
+  };
+
+  const handleMouseLeave = () => {
+    // ocultar todo y limpiar
+    if (resultRef.current) {
+      resultRef.current.style.display = 'none';
+      resultRef.current.style.backgroundImage = 'none';
+    }
+    if (lensRef.current) {
+      lensRef.current.remove();
+      lensRef.current = null;
+    }
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current);
+      rafId.current = null;
+    }
+  };
+
+  return (
+    <div className="photo-container">
+      <img
+        ref={imgRef}
+        src={image}
+        alt="product"
+        onMouseEnter={handleMouseEnter}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      />
+      <div
+        ref={resultRef}
+        className="img-zoom-result"
+        style={{ display: 'none' }}
+      />
+    </div>
+  );
+};
+
+export default Photo;

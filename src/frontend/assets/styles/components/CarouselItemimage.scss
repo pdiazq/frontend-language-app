@@ -30,3 +30,41 @@
   -o-object-fit: cover;
   object-fit: cover;
 }
+
+
+.photo-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Fija el tamaño de la imagen original */
+.photo-container img {
+  width: 300px;
+  height: auto;
+  display: block;
+}
+
+/* lente semitransparente */
+.img-zoom-lens {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  width: 100px;
+  height: 100px;
+  opacity: 0.4;
+  background-color: #fff;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ventana de zoom, misma anchura que la imagen */
+.img-zoom-result {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: calc(100% + 10px);
+  width: 300px;    /* igual que la imagen */
+  height: 300px;   /* cuadrado para mantener proporción */
+  border: 1px solid #d4d4d4;
+  background-repeat: no-repeat;
+  z-index: 100;
+}

@@ -9,7 +9,6 @@ import Search from '../components/Search';
 import PaypalBtn from '../components/PaypalBtn';
 import Comment from '../components/Comment';
 import NotFount from '../containers/NotFount';
-// Si no tienes estilos, comenta o crea un archivo vacío:
 // import '../assets/styles/components/Detail.scss';
 
 const Detail = ({ product, user, detailProd }) => {
@@ -36,7 +35,8 @@ const Detail = ({ product, user, detailProd }) => {
       <Header />
       <Search isHome />
       <div className="detail-content">
-        <Photo {...product} />
+        {/* Aquí pasamos sólo la URL de la imagen */}
+        <Photo image={product.cover} />
         <div className="detail-info">
           <h1>{product.title}</h1>
           <p><strong>Año:</strong> {product.year}</p>
@@ -59,12 +59,12 @@ const Detail = ({ product, user, detailProd }) => {
 Detail.propTypes = {
   product: PropTypes.object,
   user: PropTypes.object,
-  detailProd: PropTypes.func.isRequired
+  detailProd: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   product: state.product,
-  user: state.user || {}
+  user: state.user || {},
 });
 
 const mapDispatchToProps = { detailProd };
